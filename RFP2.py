@@ -10,7 +10,7 @@ import pickle
 #     RFclf = pickle.load(f)
 
 # OR recreate the model if it's not saved
-df = pd.read_csv("Training.csv")
+df = pd.read_csv("new-Training.csv")
 x = df.drop(['prognosis'], axis=1)
 y = df['prognosis']
 
