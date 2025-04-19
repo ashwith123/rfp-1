@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Disease Predictor</title>
+  </head>
+  <body>
+    <h1>Disease Prediction</h1>
+
+    <form action="/predict" method="POST">
+      <label>Enter symptoms (comma separated):</label><br />
+      <input
+        type="text"
+        name="symptoms"
+        placeholder="e.g., fever,cough,headache"
+      />
+      <button type="submit">Predict</button>
+    </form>
+
+    <% if (prediction) { %>
+    <h2>Predicted Disease:</h2>
+    <p><%= prediction %></p>
+    <% } %>
+  </body>
+</html>
