@@ -3,18 +3,16 @@ import json
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-import pickle
+from sklearn.model_selection import train_test_split
+import warnings
 
-# Load your trained model (if you saved it earlier)
-# with open('RFclf_model.pkl', 'rb') as f:
-#     RFclf = pickle.load(f)
+warnings.filterwarnings("ignore", category=UserWarning)
 
-# OR recreate the model if it's not saved
+# Load data and train model
 df = pd.read_csv("new-Training.csv")
 x = df.drop(['prognosis'], axis=1)
 y = df['prognosis']
 
-from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
 RFclf = RandomForestClassifier(n_estimators=50, max_depth=10, random_state=42)
@@ -35,4 +33,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         user_symptoms = sys.argv[1].split(',')
         result = predict(user_symptoms)
-        print(json.dumps(result))  # Return the prediction as JSON
+        print(json.dumps(result), flush=True)  # ✅ FLUSH + RESULT IS DEFINED

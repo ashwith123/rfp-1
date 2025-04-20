@@ -4,6 +4,7 @@ const ejs = require("ejs");
 const bodyParser = require("body-parser"); // Add body-parser for form data handling
 const path = require("path");
 const { PythonShell } = require("python-shell");
+const { spawn } = require("child_process"); // ✅ ADD THIS
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -17,7 +18,7 @@ app.get("/predict", (req, res) => {
 
 // POST route to handle prediction request
 app.post("/predict", (req, res) => {
-  var symptoms = req.body.symptoms || [];
+  let symptoms = req.body.symptoms || [];
 
   if (typeof symptoms === "string") {
     symptoms = symptoms.split(",").map((s) => s.trim());
@@ -25,27 +26,28 @@ app.post("/predict", (req, res) => {
 
   console.log("Symptoms:", symptoms);
 
-  const options = {
-    args: [symptoms.join(",")],
-  };
+  const pythonProcess = spawn("python", ["-u", "RFP2.py", symptoms.join(",")]);
 
-  PythonShell.run("RFP2.py", options, (err, results) => {
-    if (err) {
-      console.error("Python Error:", err);
-      return res
-        .status(500)
-        .render("predict", { prediction: "Error predicting disease." });
-    }
+  pythonProcess.stdout.on("data", (data) => {
+    console.log("PYTHON STDOUT:", data.toString());
 
-    let prediction = "No prediction";
+    let prediction;
     try {
-      prediction = JSON.parse(results[0]);
-    } catch (e) {
-      console.error("JSON Parse Error:", e);
+      prediction = JSON.parse(data.toString());
+    } catch (err) {
+      console.error("Failed to parse JSON:", err);
+      prediction = { prediction: "Error parsing Python output." };
     }
 
-    // Render the same predictor page with prediction result
-    res.render("predictor", { prediction });
+    res.render("predict", { prediction: JSON.stringify(prediction) });
+  });
+
+  pythonProcess.stderr.on("data", (data) => {
+    console.error("PYTHON STDERR:", data.toString());
+  });
+
+  pythonProcess.on("close", (code) => {
+    console.log(`Python script exited with code ${code}`);
   });
 });
 
