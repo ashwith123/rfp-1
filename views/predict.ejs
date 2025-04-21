@@ -11,29 +11,40 @@
           <div class="heart">❤︎</div>
           <div class="brand">SAC Hospitals</div>
         </div>
-        <div>
-          <a href="/">Home</a>
+        <div class="nav-links">
+          <a href="/" class="active">Home</a>
           <a href="/predict">Disease Predictor</a>
           <a href="/about">About Us</a>
         </div>
       </div>
     </nav>
 
-    <h1>Disease Prediction</h1>
+    <div class="whole">
+      <div class="p_box">
+        <h1>Disease Prediction</h1>
 
-    <form action="/predict" method="POST">
-      <label>Enter symptoms (comma separated):</label><br />
-      <input
-        type="text"
-        name="symptoms"
-        placeholder="e.g., fever,cough,headache"
-      />
-      <button type="submit">Predict</button>
-    </form>
+        <form action="/predict" method="POST">
+          <label>Enter symptoms (comma separated):</label>
+          <input
+            type="text"
+            name="symptoms"
+            placeholder="e.g., fever,cough,headache"
+          />
+          <button type="submit">Predict</button>
+        </form>
 
-    <% if (prediction) { %>
-    <h2>Predicted Disease:</h2>
-    <p><%= prediction %></p>
-    <% } %>
+        <% if (prediction) { %>
+        <h2>Predicted Disease:</h2>
+        <p>You may have :<%= prediction %></p>
+        <% } %> <% if (precaution && precaution.length > 0) { %>
+        <h3>Precautions must be taken are:</h3>
+        <ul>
+          <% precaution.forEach(function(item) { %>
+          <li><%= item %></li>
+          <% }) %>
+        </ul>
+        <% } %>
+      </div>
+    </div>
   </body>
 </html>

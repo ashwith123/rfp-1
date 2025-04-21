@@ -25,7 +25,7 @@ def predict(user_input):
     prediction = RFclf.predict([input_symptoms])[0]
     probability = np.max(RFclf.predict_proba([input_symptoms]))
     return {
-        "prediction": prediction,
+        "disease": prediction,
         "probability": float(probability)
     }
 
