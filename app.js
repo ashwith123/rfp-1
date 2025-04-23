@@ -13,10 +13,6 @@ app.use(express.static(path.join(__dirname, "public")));
 // Middleware to parse form data
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/predict", (req, res) => {
-  res.render("predict", { prediction: null });
-});
-
 const precautionsMap = {
   "Fungal Infection": [
     "Keep skin clean and dry.",
@@ -375,7 +371,7 @@ const precautionsMap = {
     "Disinfect surfaces.",
     "Seek medical help if persistent.",
   ],
-  "Fungal Infection": [
+  FungalInfection: [
     "Keep skin clean and dry.",
     "Avoid sharing personal items.",
     "Use antifungal creams as prescribed.",
@@ -656,7 +652,12 @@ const precautionsMap = {
     "Avoid sharing personal items.",
   ],
 };
-// POST route to handle prediction request
+let defaultPrecaution = ["Consult a doctor for personalized advice."];
+
+app.get("/predict", (req, res) => {
+  res.render("predict", { prediction: null, defaultPrecaution });
+});
+
 app.post("/predict", (req, res) => {
   let symptoms = req.body.symptoms || [];
 
@@ -672,16 +673,18 @@ app.post("/predict", (req, res) => {
     console.log("PYTHON STDOUT:", data.toString());
 
     let prediction;
+    let precaution;
     try {
       const parsed = JSON.parse(data.toString());
       prediction = parsed.disease;
-      precaution =
-        precautionsMap[prediction] ||
-        "Consult a doctor for personalized advice.";
+      precaution = precautionsMap[prediction] || defaultPrecaution;
       console.log("Type of Precaution:", typeof precaution);
+      console.log("Sending to EJS:", { prediction, precaution });
     } catch (err) {
       console.error("Failed to parse JSON:", err);
       prediction = { prediction: "Error parsing Python output." };
+      precaution = ["Unable to provide precautions due to an internal error."];
+      console.log("Sending to EJS:", { prediction, precaution });
     }
 
     res.render("predict", { prediction, precaution });
@@ -689,10 +692,6 @@ app.post("/predict", (req, res) => {
 
   pythonProcess.stderr.on("data", (data) => {
     console.error("PYTHON STDERR:", data.toString());
-  });
-
-  pythonProcess.on("close", (code) => {
-    console.log(`Python script exited with code ${code}`);
   });
 });
 

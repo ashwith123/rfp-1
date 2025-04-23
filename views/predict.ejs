@@ -8,7 +8,7 @@
     <nav>
       <div class="navbar">
         <div class="logo">
-          <div class="heart">❤︎</div>
+          <div class="heart">❤</div>
           <div class="brand">SAC Hospitals</div>
         </div>
         <div class="nav-links">
@@ -35,15 +35,16 @@
 
         <% if (prediction) { %>
         <h2>Predicted Disease:</h2>
-        <p>You may have :<%= prediction %></p>
-        <% } %> <% if (precaution && precaution.length > 0) { %>
+        <p>You may have: <%= prediction %></p>
+        <% } %> <%if(precaution){%> <% if (Array.isArray(precaution) &&
+        precaution.length > 0) { %>
         <h3>Precautions must be taken are:</h3>
         <ul>
           <% precaution.forEach(function(item) { %>
           <li><%= item %></li>
           <% }) %>
         </ul>
-        <% } %>
+        <% }} %>
       </div>
     </div>
   </body>
