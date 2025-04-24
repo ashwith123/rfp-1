@@ -10,6 +10,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
+// Middleware to parse form data
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const precautionsMap = {
@@ -653,8 +654,16 @@ const precautionsMap = {
 };
 let defaultPrecaution = ["Consult a doctor for personalized advice."];
 
+app.get("/about", (req, res) => {
+  res.render("about");
+});
+
 app.get("/predict", (req, res) => {
-  res.render("predict", { prediction: null, defaultPrecaution });
+  res.render("predict", { prediction: null, precaution: [] });
+});
+
+app.get("/login", (req, res) => {
+  res.render("login");
 });
 
 app.post("/predict", (req, res) => {
